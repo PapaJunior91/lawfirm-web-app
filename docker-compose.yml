@@ -1,0 +1,54 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: banda
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: legalcase
+    container_name: legacase-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - legalcase
+
+  db:
+    image: mysql:5.7
+    container_name: legalcase-db
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      # MYSQL_DATABASE: ${DB_DATABASE}
+      # MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      # MYSQL_PASSWORD: ${DB_PASSWORD}
+      # MYSQL_USER: ${DB_USERNAME}
+      MYSQL_DATABASE: legalcase
+      MYSQL_ROOT_PASSWORD: Papa@1993
+      MYSQL_PASSWORD: Papa@1993
+      MYSQL_USER: banda
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./docker-compose/mysql:/docker-entrypoint-initdb.d
+    networks:
+      - legalcase
+
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: legalcase-nginx
+  #   restart: unless-stopped
+  #   ports:
+  #     - 8000:80
+  #   volumes:
+  #     - ./:/var/www/html
+  #     - ./docker-compose/nginx:/etc/nginx/conf.d/
+  #   networks:
+  #     - legalcase
+
+networks:
+  legalcase:
+    driver: bridge
